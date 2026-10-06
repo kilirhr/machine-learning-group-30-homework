@@ -1,0 +1,12 @@
+# Tested with Python 3.13.
+# Install with: python -m pip install -r requirements.txt
+
+numpy==2.5.3
+pandas==3.0.6
+matplotlib==3.11.2
+seaborn==0.13.2
+scikit-learn==1.9.1
+
+# Notebook display functions and kernel support (e.g. in VS Code).
+ipython==9.17.1
+ipykernel==7.4.0

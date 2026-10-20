@@ -1,0 +1,195 @@
+{
+  "dataset": "everything and then some, train.csv",
+  "steps": [
+    {
+      "column": "all columns",
+      "action": "dropped the empty rows from train",
+      "reason": "no feature value, nothing to learn, rows in test are never dropped",
+      "rows_affected": 65,
+      "carries": {
+        "dropempty": true
+      }
+    },
+    {
+      "column": "days_since_previous_purchase, prior_mean_gap_days",
+      "action": "-4 to missing",
+      "reason": "-4 days is a code, not a real number of days",
+      "rows_affected": 32,
+      "carries": {
+        "tomissing": "below 0"
+      }
+    },
+    {
+      "column": "prior_mean_purchase_value",
+      "action": "recomputed as prior_total_spend / prior_purchase_count",
+      "reason": "wrong, negative or 1e9 values, the mean follows from total and count",
+      "rows_affected": 272,
+      "carries": {
+        "formula": "prior_total_spend / prior_purchase_count"
+      }
+    },
+    {
+      "column": "prior_max_purchase_value",
+      "action": "values above the total spend to missing",
+      "reason": "a single purchase can not be bigger than the total",
+      "rows_affected": 45,
+      "carries": {
+        "bound": "prior_total_spend"
+      }
+    },
+    {
+      "column": "spend_365d",
+      "action": "1e9 to missing, absolute value, above the total to missing",
+      "reason": "placeholder, wrong sign and impossible values",
+      "rows_affected": 69,
+      "carries": {
+        "placeholder": 100000000.0,
+        "absolute": true,
+        "bound": "prior_total_spend"
+      }
+    },
+    {
+      "column": "history columns",
+      "action": "0 when not enough earlier purchases, plus two flags",
+      "reason": "the value can not exist yet, so the gap is structural",
+      "rows_affected": 1413,
+      "carries": {
+        "needed": {
+          "days_since_previous_purchase": 1,
+          "prior_mean_purchase_value": 1,
+          "prior_min_purchase_value": 1,
+          "prior_max_purchase_value": 1,
+          "prior_std_purchase_value": 2,
+          "prior_mean_gap_days": 2,
+          "prior_std_gap_days": 3
+        },
+        "flags": [
+          "is_first_purchase",
+          "has_gap_history"
+        ]
+      }
+    },
+    {
+      "column": "other missing values",
+      "action": "training median for numbers, level missing for categories",
+      "reason": "few and random, fitted on the training rows only",
+      "rows_affected": 1194,
+      "carries": {
+        "numeric": "median",
+        "categorical": "missing"
+      }
+    },
+    {
+      "column": "prior_total_spend",
+      "action": "IQR outliers kept, log1p instead",
+      "reason": "real big customers, they repeat more often",
+      "rows_affected": 642,
+      "carries": {
+        "dropoutliers": false
+      }
+    },
+    {
+      "column": "warehouse, document_series, Total a Pagar, Total Bruto, random_noise",
+      "action": "not used",
+      "reason": "almost constant, only some years, can be computed or only noise",
+      "rows_affected": 0,
+      "carries": {
+        "dropped": [
+          "warehouse",
+          "document_series",
+          "Total a Pagar",
+          "Total Bruto",
+          "random_noise"
+        ]
+      }
+    },
+    {
+      "column": "purchase_date",
+      "action": "month as a category, year dropped",
+      "reason": "stable monthly pattern, later purchases fall into unseen years",
+      "rows_affected": 6469,
+      "carries": {
+        "extract": "month"
+      }
+    },
+    {
+      "column": "clientes.csv",
+      "action": "not used",
+      "reason": "the two columns add far less than the spread between the folds",
+      "rows_affected": 0,
+      "carries": {
+        "useclientes": false
+      }
+    },
+    {
+      "column": "new features",
+      "action": "purchases_per_year, typical_gap_le_90, discount_rate, zero_cost, has_shipping",
+      "reason": "built from the same row only, kept for now",
+      "rows_affected": 6469,
+      "carries": {
+        "newfeatures": [
+          "purchases_per_year",
+          "typical_gap_le_90",
+          "discount_rate",
+          "zero_cost",
+          "has_shipping"
+        ]
+      }
+    },
+    {
+      "column": "numeric and categorical columns",
+      "action": "log1p and StandardScaler, one-hot with minimum frequency 30",
+      "reason": "less skew for the logistic regression, rare levels grouped",
+      "rows_affected": 6469,
+      "carries": {
+        "numeric": [
+          "Total Liquido",
+          "Total Imp_",
+          "Total Portes",
+          "Total Desc_ Global",
+          "Total Desc_ Linha",
+          "Custo",
+          "N_ Detalhes",
+          "invoice_count_current_purchase",
+          "days_since_previous_purchase",
+          "customer_tenure_days",
+          "prior_purchase_count",
+          "prior_total_spend",
+          "prior_mean_purchase_value",
+          "prior_std_purchase_value",
+          "prior_min_purchase_value",
+          "prior_max_purchase_value",
+          "prior_mean_gap_days",
+          "prior_std_gap_days",
+          "purchase_count_30d",
+          "spend_30d",
+          "purchase_count_90d",
+          "spend_90d",
+          "purchase_count_180d",
+          "spend_180d",
+          "purchase_count_365d",
+          "spend_365d",
+          "purchases_per_year",
+          "discount_rate"
+        ],
+        "flags": [
+          "is_first_purchase",
+          "has_gap_history",
+          "typical_gap_le_90",
+          "zero_cost",
+          "has_shipping"
+        ],
+        "categorical": [
+          "payment_type",
+          "salesperson",
+          "commercial_zone",
+          "transport_method",
+          "month"
+        ],
+        "log1p": true,
+        "scaler": "standard",
+        "minfrequency": 30
+      }
+    }
+  ]
+}

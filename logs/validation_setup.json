@@ -1,0 +1,7 @@
+{
+  "holdout_start": "2024-03-01",
+  "n_splits": 5,
+  "gap_days": 90,
+  "drop_rows_without_date": true,
+  "sort": "purchase_date, stable"
+}

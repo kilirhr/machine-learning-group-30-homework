@@ -1,0 +1,39 @@
+{
+  "model": "Logistic regression",
+  "parameters": {
+    "C": 0.003,
+    "class_weight": null
+  },
+  "threshold": 0.5,
+  "numeric": [
+    "Total Imp_",
+    "Total Desc_ Global",
+    "Total Desc_ Linha",
+    "N_ Detalhes",
+    "customer_tenure_days",
+    "prior_mean_gap_days",
+    "prior_std_purchase_value",
+    "prior_max_purchase_value",
+    "purchase_count_90d",
+    "purchase_count_180d",
+    "purchase_count_365d",
+    "spend_30d",
+    "discount_rate",
+    "prior_repeat_share",
+    "same_season_last_year",
+    "same_season_two_years_ago"
+  ],
+  "flags": [
+    "zero_cost"
+  ],
+  "categorical": [
+    "payment_type",
+    "salesperson",
+    "month"
+  ],
+  "cv_f1": 0.7533,
+  "cv_f1_std": 0.0134,
+  "cv_auc": 0.8001,
+  "holdout_f1": 0.7874,
+  "holdout_auc": 0.8178
+}
